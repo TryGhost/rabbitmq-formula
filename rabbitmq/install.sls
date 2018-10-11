@@ -8,6 +8,31 @@ include:
   - .config_exchange
 {% endif %}
 
+{% if salt['pillar.get']('rabbitmq:manage_repo', False) %}
+rabbitmq-repo:
+  pkgrepo.managed:
+    - humanname: rabbitmq
+    - name: deb https://dl.bintray.com/rabbitmq/debian {{ salt['grains.get']('oscodename', 'trusty')|lower }} main
+    - key_url: https://dl.bintray.com/rabbitmq/Keys/rabbitmq-release-signing-key.asc
+    - refresh_db: True
+{% endif %}
+
+{% if salt['pillar.get']('rabbitmq:manage_erlang', False) %}
+erlang-repo:
+  pkgrepo.managed:
+    - humanname: erlang-solutions
+    - name: deb https://packages.erlang-solutions.com/ubuntu {{ salt['grains.get']('oscodename', 'trusty')|lower }} contrib
+    - key_url: https://packages.erlang-solutions.com/ubuntu/erlang_solutions.asc
+    - refresh_db: True
+
+erlang-package:
+  pkg.installed:
+    - name: erlang
+    {%- if 'erlang_version' in salt['pillar.get']('rabbitmq', {}) %}
+    - version: {{ salt['pillar.get']('rabbitmq:erlang_version') }}
+    {%- endif %}
+{% endif %}
+
 rabbitmq-server:
   pkg.installed:
     - name: {{ pkgs['rabbitmq-server'] }}
@@ -37,4 +62,3 @@ rabbitmq_binary_tool_plugins:
     - require:
       - pkg: rabbitmq-server
       - file: rabbitmq_binary_tool_env
-
