@@ -9,11 +9,18 @@ include:
 {% endif %}
 
 {% if salt['pillar.get']('rabbitmq:manage_repo', False) %}
+rabbitmq-repo-deps:
+  pkg.installed:
+    - pkgs:
+      - curl
+      - gnupg
+      - apt-transport-https
+
 rabbitmq-repo:
   pkgrepo.managed:
     - humanname: rabbitmq
-    - name: deb https://dl.bintray.com/rabbitmq/debian {{ salt['grains.get']('oscodename', 'trusty')|lower }} main
-    - key_url: https://dl.bintray.com/rabbitmq/Keys/rabbitmq-release-signing-key.asc
+    - name: deb https://packagecloud.io/rabbitmq/rabbitmq-server/ubuntu/ {{ salt['grains.get']('oscodename', 'trusty')|lower }} main
+    - key_url: https://packagecloud.io/rabbitmq/rabbitmq-server/gpgkey
     - refresh_db: True
 {% endif %}
 
