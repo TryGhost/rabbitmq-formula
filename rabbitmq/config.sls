@@ -40,3 +40,34 @@ rabbitmq_user_{{ name }}:
     - require:
       - service: rabbitmq-server
 {% endfor %}
+
+{% if salt['pillar.get']('rabbitmq:remove_guest', False) %}
+remove_guest_user:
+  rabbitmq_user.absent:
+    - name: guest
+    - require:
+      - service: rabbitmq-server
+{% endif %}
+
+{% if salt['pillar.get']('rabbitmq:admin_user', False) %}
+rabbitmq_admin_user:
+  rabbitmq_user.present:
+    - name: {{ salt['pillar.get']('rabbitmq:admin_user') }}
+    - password: {{ salt['pillar.get']('rabbitmq:admin_pass') }}
+    - force: True
+    - tags: administrator
+    - perms:
+      - '/':
+        - '.*'
+        - '.*'
+        - '.*'
+{% for name, vhost in salt["pillar.get"]("rabbitmq:vhost", {}).items() if not vhost == '/' %}
+      - {{ vhost }}:
+        - '.*'
+        - '.*'
+        - '.*'
+{% endfor %}
+    - runas: root
+    - require:
+      - service: rabbitmq-server
+{% endif %}
