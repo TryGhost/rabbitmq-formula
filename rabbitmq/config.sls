@@ -94,4 +94,5 @@ rabbit@{{ cluster_host_name }}:
     - require:
       - service: rabbitmq-server
 {% endif %}
+{% endfor %}
 {% endif %}
