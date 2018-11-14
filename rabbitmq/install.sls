@@ -47,6 +47,24 @@ rabbitmq-server:
     - version: {{ salt['pillar.get']('rabbitmq:version') }}
     {%- endif %}
 
+{% if salt['pillar.get']('rabbitmq:erlang_cookie', False) %}
+  file.managed:
+    - makedirs: True
+    - name: /var/lib/rabbitmq/.erlang.cookie
+    - mode: 400
+    - user: rabbitmq
+    - group: rabbitmq
+    - contents_pillar: rabbitmq:erlang_cookie
+    - require:
+      - pkg: rabbitmq-server
+    - require_in:
+      - service: rabbitmq-server
+  cmd.run:
+    - name: killall -u rabbitmq
+    - onchanges:
+      - file: /var/lib/rabbitmq/.erlang.cookie
+{% endif %}
+
   service:
     - {{ "running" if salt['pillar.get']('rabbitmq:running', True) else "dead" }}
     - enable: {{ salt['pillar.get']('rabbitmq:enabled', True) }}

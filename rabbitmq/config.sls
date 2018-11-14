@@ -72,20 +72,6 @@ rabbitmq_admin_user:
       - service: rabbitmq-server
 {% endif %}
 
-{% if salt['pillar.get']('rabbitmq:erlang_cookie', False) %}
-'/var/lib/rabbitmq/.erlang.cookie':
-  file.managed:
-    - makedirs: True
-    - mode: 400
-    - user: rabbitmq
-    - group: rabbitmq
-    - contents_pillar: rabbitmq:erlang_cookie
-    - require:
-      - pkg: rabbitmq-server
-    - require_in:
-      - service: rabbitmq-server
-{% endif %}
-
 {% if salt['pillar.get']('rabbitmq:cluster', False) %}
 {% for cluster_host_name, cluster_host_address in salt['pillar.get']('rabbitmq:cluster_hosts', {}).items() %}
 {% if cluster_host_name != grains['id'] %}
