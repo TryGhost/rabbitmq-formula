@@ -2,6 +2,14 @@ rabbitmq:
   version: "3.5.3-1"
   enabled: True
   running: True
+  remove_guest: True
+  admin_user: admin
+  admin_pass: adminpass
+  erlang_cookie: somesharederlangsecretcookie
+  cluster: True
+  cluster_hosts:
+    server1: 192.168.1.1
+    server2: server2.example.com
   plugin:
     rabbitmq_management:
       - enabled

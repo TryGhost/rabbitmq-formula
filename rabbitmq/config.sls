@@ -71,3 +71,27 @@ rabbitmq_admin_user:
     - require:
       - service: rabbitmq-server
 {% endif %}
+
+{% if salt['pillar.get']('rabbitmq:erlang_cookie', False) %}
+'/var/lib/rabbitmq/.erlang.cookie':
+  file.managed:
+    - makedirs: True
+    - mode: 400
+    - user: rabbitmq
+    - group: rabbitmq
+    - contents_pillar: rabbitmq:erlang_cookie
+    - watch_in:
+      - service: rabbitmq-server
+{% endif %}
+
+{% if salt['pillar.get']('rabbitmq:cluster', False) %}
+{% for cluster_host_name, cluster_host_address in salt['pillar.get']('rabbitmq:cluster_hosts', {}).items() %}
+{% if cluster_host_name != grains['id'] %}
+rabbit@{{ cluster_host_name }}:
+  rabbitmq_cluster.joined:
+    - user: rabbit
+    - host: {{ cluster_host_address }}
+    - require:
+      - service: rabbitmq-server
+{% endif %}
+{% endif %}
