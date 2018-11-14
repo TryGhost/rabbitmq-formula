@@ -80,7 +80,9 @@ rabbitmq_admin_user:
     - user: rabbitmq
     - group: rabbitmq
     - contents_pillar: rabbitmq:erlang_cookie
-    - watch_in:
+    - require:
+      - pkg: rabbitmq-server
+    - require_in:
       - service: rabbitmq-server
 {% endif %}
 
