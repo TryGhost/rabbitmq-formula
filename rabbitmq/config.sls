@@ -73,12 +73,12 @@ rabbitmq_admin_user:
 {% endif %}
 
 {% if salt['pillar.get']('rabbitmq:cluster', False) %}
-{% for cluster_host_name, cluster_host_address in salt['pillar.get']('rabbitmq:cluster_hosts', {}).items() %}
+{% for cluster_host_name in salt['pillar.get']('rabbitmq:cluster_hosts', []).items() %}
 {% if cluster_host_name != grains['id'] %}
 rabbit@{{ cluster_host_name }}:
   rabbitmq_cluster.joined:
     - user: rabbit
-    - host: {{ cluster_host_address }}
+    - host: {{ cluster_host_name }}
     - require:
       - service: rabbitmq-server
 {% endif %}
