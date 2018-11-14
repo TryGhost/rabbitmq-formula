@@ -63,6 +63,8 @@ rabbitmq-server:
     - name: killall -u rabbitmq
     - onchanges:
       - file: /var/lib/rabbitmq/.erlang.cookie
+    - require_in:
+      - service: rabbitmq-server
 {% endif %}
 
   service:

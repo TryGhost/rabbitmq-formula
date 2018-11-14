@@ -8,8 +8,7 @@ rabbitmq:
   erlang_cookie: somesharederlangsecretcookie
   cluster: True
   cluster_hosts:
-    server1: 192.168.1.1
-    server2: server2.example.com
+    - server1
   plugin:
     rabbitmq_management:
       - enabled
