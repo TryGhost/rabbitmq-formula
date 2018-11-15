@@ -5,6 +5,9 @@ rabbitmq:
   remove_guest: True
   admin_user: admin
   admin_pass: adminpass
+  monitoring_user: monitor
+  monitoring_vhost: optionalmonitoringvhost
+  monitoring_pass: monitorpass
   erlang_cookie: somesharederlangsecretcookie
   cluster: True
   cluster_hosts:

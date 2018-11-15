@@ -19,6 +19,13 @@ rabbitmq_vhost_{{ name }}:
     - require:
       - service: rabbitmq-server
 {% endfor %}
+{% if salt['pillar.get']('rabbitmq:monitoring_vhost', False) %}
+rabbitmq_monitoring_vhost:
+  rabbitmq_vhost.present:
+    - name: {{ salt['pillar.get']('rabbitmq:monitoring_vhost') }}
+    - require:
+      - service: rabbitmq-server
+{% endif %}
 
 {% for name, policy in salt["pillar.get"]("rabbitmq:policy", {}).items() %}
 {{ name }}:
@@ -68,6 +75,24 @@ rabbitmq_admin_user:
         - '.*'
 {% endfor %}
     - runas: root
+    - require:
+      - service: rabbitmq-server
+{% endif %}
+
+{% if salt['pillar.get']('rabbitmq:monitoring_user', False) %}
+
+rabbitmq_monitoring_user:
+  rabbitmq_user.present:
+    - name: {{ salt['pillar.get']('rabbitmq:monitoring_user') }}
+    - password: {{ salt['pillar.get']('rabbitmq:monitoring_pass') }}
+    - force: True
+    - tags: monitoring
+    - runas: root
+    - perms:
+      - '{{ salt['pillar.get']('rabbitmq:monitoring_vhost', '/') }}':
+        - '.*'
+        - '.*'
+        - '.*'
     - require:
       - service: rabbitmq-server
 {% endif %}
